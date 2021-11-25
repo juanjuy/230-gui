@@ -34,57 +34,22 @@ class Model {
 
     return cars;
   }
-}
 
-class View {
-  constructor() {
-    this.template = Handlebars.compile($('#carTemplate').html());
-    this.form = $('form');
+  getModelsOfMake(make) {
+    let carsOfMake = this.cars.filter(car => car.make === make);
+
+    let models = this.removeDupes(carsOfMake.map(car => car.model));
+
+    return models;
   }
 
-  generateListings(cars) {
-    $('main').empty();
-    $('main').html(this.template({ cars: cars }));
-  }
-
-  populateFilters(cars) {
+  getFilterValues() {
     let makes = this.removeDupes(cars.map(car => car.make));
     let models = this.removeDupes(cars.map(car => car.model));
     let prices = this.removeDupes(cars.map(car => car.price));
     let years = this.removeDupes(cars.map(car => car.year));
 
-    let $make = $('#make');
-    let $model = $('#model');
-    let $price = $('#price');
-    let $year = $('#year');
-
-    makes.forEach(make => {
-      let opt = document.createElement('option');
-      opt.value = make;
-      opt.textContent = make;
-      $make.append(opt);
-    })
-
-    models.forEach(model => {
-      let opt = document.createElement('option');
-      opt.value = model;
-      opt.textContent = model;
-      $model.append(opt);
-    })
-
-    prices.forEach(price => {
-      let opt = document.createElement('option');
-      opt.value = price;
-      opt.textContent = price;
-      $price.append(opt);
-    })
-
-    years.forEach(year => {
-      let opt = document.createElement('option');
-      opt.value = year;
-      opt.textContent = year;
-      $year.append(opt);
-    })
+    return { makes, models, prices, years };
   }
 
   removeDupes(array) {
@@ -98,16 +63,67 @@ class View {
       }
     })
   }
+}
+
+class View {
+  constructor() {
+    this.template = Handlebars.compile($('#carTemplate').html());
+    this.$form = $('form');
+    this.$make = $('#make');
+    this.$model = $('#model');
+    this.$price = $('#price');
+    this.$year = $('#year');
+  }
+
+  generateListings(cars) {
+    $('main').empty();
+    $('main').html(this.template({ cars: cars }));
+  }
+
+  populateFilters({makes, models, prices, years}) {
+    this.$make.find('*').not('[value=null]').remove();
+    this.$model.find('*').not('[value=null]').remove();
+    this.$price.find('*').not('[value=null]').remove();
+    this.$year.find('*').not('[value=null]').remove();
+
+    makes.forEach(make => {
+      let opt = document.createElement('option');
+      opt.value = make;
+      opt.textContent = make;
+      this.$make.append(opt);
+    })
+
+    models.forEach(model => {
+      let opt = document.createElement('option');
+      opt.value = model;
+      opt.textContent = model;
+      this.$model.append(opt);
+    })
+
+    prices.forEach(price => {
+      let opt = document.createElement('option');
+      opt.value = price;
+      opt.textContent = price;
+      this.$price.append(opt);
+    })
+
+    years.forEach(year => {
+      let opt = document.createElement('option');
+      opt.value = year;
+      opt.textContent = year;
+      this.$year.append(opt);
+    })
+  }
 
   bindFilterSubmit(handler) {
-    this.form.on('submit', event => {
+    this.$form.on('submit', event => {
       event.preventDefault();
       handler(this.makeFilterObject());
     })
   }
 
   makeFilterObject() {
-    let array = this.form.serializeArray();
+    let array = this.$form.serializeArray();
     return {
       make: array[0].value,
       model: array[1].value,
@@ -115,20 +131,51 @@ class View {
       year: array[3].value
     }
   }
+
+  updateModelSelect(models) {
+    this.$model.empty();
+    let allOption = document.createElement('option');
+    allOption.value = 'null';
+    allOption.textContent = 'All';
+    this.$model.append($(allOption));
+
+    for (let model of models) {
+      let option = document.createElement('option');
+      option.value = model;
+      option.textContent = model;
+      this.$model.append($(option));
+    }
+  }
+
+  bindMakeUpdate(handler) {
+    this.$make.on('change', event => {
+      handler(event.target.value);
+    })
+  }
 }
 
 class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.view.populateFilters(this.model.cars);
+    this.view.populateFilters(this.model.getFilterValues());
     this.view.generateListings(this.model.cars);
     this.view.bindFilterSubmit(this.handleFiltering.bind(this));
+    this.view.bindMakeUpdate(this.handleMakeChange.bind(this));
   }
 
   handleFiltering(filterObj) {
     let filteredListings = this.model.filterList(filterObj);
     this.view.generateListings(filteredListings);
+  }
+
+  handleMakeChange(newMake) {
+    if (newMake === 'null') {
+      this.view.populateFilters(this.model.getFilterValues());
+    } else {
+      let models = this.model.getModelsOfMake(newMake);
+      this.view.updateModelSelect(models);
+    }
   }
 }
 
