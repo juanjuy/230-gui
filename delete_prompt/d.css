@@ -1,0 +1,65 @@
+body {
+  background-color: green;
+  color: white;
+}
+
+#todos li {
+  background-color: white;
+  color: black;
+  list-style: none;
+  margin: 10px 0px;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.delete {
+  float: right;
+  cursor: pointer;
+}
+
+.delete:hover {
+  width: 25px;
+}
+
+#modal-bg {
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: rgba(60, 80, 63, 0.58);
+}
+
+#modal-box {
+  background-color: white;
+  color: black;
+  width: 500px;
+  padding: 20px;
+  margin: auto;
+}
+
+#modal-box button {
+  float: right;
+}
+
+#context {
+  position: absolute;
+  border: 1px solid black;
+  padding: 0;
+  margin: 0;
+}
+
+#context li {
+  background-color: gray;
+  margin: 0px;
+  border-radius: 0;
+  border: 1px solid darkgray;
+}
+
+#context li:hover {
+  background-color: white;
+}

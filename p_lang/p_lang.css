@@ -1,0 +1,26 @@
+h1 {
+  text-align: center;
+  color: white;
+}
+
+body {
+  background-color: #9a992f;
+}
+
+main {
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 5px;
+  width: 600px;
+  margin: auto;
+  padding: 20px 20px 10px;
+}
+
+button {
+  background-color: #9a992f;
+  color: white;
+  border-radius: 5px;
+  border-style: none;
+  padding: 5px;
+  cursor: pointer;
+}
