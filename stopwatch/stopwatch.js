@@ -115,7 +115,7 @@ class View {
   }
 
   bindClickStartStop(startHandler, stopHandler) {
-    this.$startStop.on('click', event => {
+    this.$startStop.on('mousedown', event => {
       if (this.$startStop.text() === 'Start') {
         this.$startStop.text('Stop')
         startHandler();
@@ -127,7 +127,7 @@ class View {
   }
 
   bindClickReset(handler) {
-    this.$reset.on('click', event => {
+    this.$reset.on('mousedown', event => {
       this.$startStop.text('Start');
       handler();
     })
